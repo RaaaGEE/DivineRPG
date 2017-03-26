@@ -59,7 +59,6 @@ public class ArcanaHelper implements IExtendedEntityProperties {
 
 	public boolean useBar(float amount) {
 		if(barValue < amount) {
-			regenDelay = 50;
 			return false;
 		}
 		barValue -= amount;
