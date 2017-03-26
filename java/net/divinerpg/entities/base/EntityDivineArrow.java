@@ -212,7 +212,7 @@ public class EntityDivineArrow extends EntityArrow {
             ++this.ticksInAir;
             Vec3 vec31 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             Vec3 vec3 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            MovingObjectPosition position = this.worldObj.rayTraceBlocks(vec31, vec3, false, true, false);
+            MovingObjectPosition position = this.worldObj.func_147447_a/*rayTraceBlocks*/(vec31, vec3, false, true, false);
             vec31 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             vec3 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -273,44 +273,50 @@ public class EntityDivineArrow extends EntityArrow {
                     if (this.shootingEntity == null) {
                         damagesource = DamageSource.causeArrowDamage(this, this);
                     } else {
-                        damagesource = DamageSource.causeArrowDamage(this, this.shootingEntity);
+                        damagesource = DamageSource.causeArrowDamage(this, shootingEntity);
                     }
 
                     if (position.entityHit.attackEntityFrom(damagesource, (float) k)) {
-                        if(position.entityHit instanceof EntityPlayer && this.shootingEntity instanceof EntityTwilightArcher) ((EntityPlayer)position.entityHit).triggerAchievement(DivineRPGAchievements.arrowToTheKnee);
-                        if (this.getTextureName().equals("hunterArrow")) && position.entityHit instanceof EntityLivingBase) {
+                        if(position.entityHit instanceof EntityPlayer && shootingEntity instanceof EntityTwilightArcher) 
+                        	((EntityPlayer)position.entityHit).triggerAchievement(DivineRPGAchievements.arrowToTheKnee);
+                        
+                        if (getTextureName().equals("hunterArrow") && position.entityHit instanceof EntityLivingBase)
                             ((EntityLivingBase) position.entityHit).addPotionEffect(new PotionEffect(Potion.poison.id, 40, 2));
-                        }
 
-                        if (this.isBurning() && !(position.entityHit instanceof EntityEnderman)) position.entityHit.setFire(5);
-                        if (this.getTextureName().equals("infernoArrow")) position.entityHit.setFire(12);
+                        if (isBurning() && !(position.entityHit instanceof EntityEnderman)) 
+                        	position.entityHit.setFire(5);
+                        
+                        if (getTextureName().equals("infernoArrow")) 
+                        	position.entityHit.setFire(12);
 
-                        if (this.getTextureName().equals("bluefireArrow")) || this.getTextureName().equals("snowstormArrow"))) this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
+                        if (getTextureName().equals("bluefireArrow") || getTextureName().equals("snowstormArrow")) 
+                        	worldObj.createExplosion(this, posX, posY, posZ, 3.0F, false);
+                        
                         if (position.entityHit instanceof EntityLivingBase) {
                             EntityLivingBase entitylivingbase = (EntityLivingBase) position.entityHit;
 
-                            if (this.knockbackStrength > 0) {
-                                f4 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                            if (knockbackStrength > 0) {
+                                f4 = MathHelper.sqrt_double(motionX * motionX + motionZ * motionZ);
 
                                 if (f4 > 0.0F) {
-                                    position.entityHit.addVelocity(this.motionX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f4, 0.1D, this.motionZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f4);
+                                    position.entityHit.addVelocity(motionX * (double) knockbackStrength * 0.6000000238418579D / (double) f4, 0.1D, motionZ * (double) knockbackStrength * 0.6000000238418579D / (double) f4);
                                 }
                             }
 
-                            if (this.shootingEntity != null && this.shootingEntity instanceof EntityLivingBase) {
-                                EnchantmentHelper.func_151384_a(entitylivingbase, this.shootingEntity);
-                                EnchantmentHelper.func_151385_b((EntityLivingBase) this.shootingEntity, entitylivingbase);
+                            if (shootingEntity != null && shootingEntity instanceof EntityLivingBase) {
+                                EnchantmentHelper.func_151384_a(entitylivingbase, shootingEntity);
+                                EnchantmentHelper.func_151385_b((EntityLivingBase) shootingEntity, entitylivingbase);
                             }
 
-                            if (this.shootingEntity != null && position.entityHit != this.shootingEntity && position.entityHit instanceof EntityPlayer && this.shootingEntity instanceof EntityPlayerMP) {
-                                ((EntityPlayerMP) this.shootingEntity).playerNetServerHandler.sendPacket(new S2BPacketChangeGameState(6, 0.0F));
+                            if (shootingEntity != null && position.entityHit != shootingEntity && position.entityHit instanceof EntityPlayer && shootingEntity instanceof EntityPlayerMP) {
+                                ((EntityPlayerMP) shootingEntity).playerNetServerHandler.sendPacket(new S2BPacketChangeGameState(6, 0.0F));
                             }
                         }
 
-                        this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+                        playSound("random.bowhit", 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
 
                         if (!(position.entityHit instanceof EntityEnderman)) {
-                            this.setDead();
+                            setDead();
                         }
                     } else {
                         this.motionX *= -0.10000000149011612D;
@@ -395,7 +401,7 @@ public class EntityDivineArrow extends EntityArrow {
             this.motionZ *= (double) f3;
             this.motionY -= (double) f1;
             this.setPosition(this.posX, this.posY, this.posZ);
-            this.doBlockCollisions();
+            this.func_145775_I/*doBlockCollisions*/();
 
             if ((this.worldObj.getBlock((int) Math.round(this.posX), (int) Math.floor(this.posY) - 1, (int) Math.round(this.posZ)) != Blocks.air || this.worldObj.getBlock((int) Math.round(this.posX), (int) Math.floor(this.posY), (int) Math.round(this.posZ)) != Blocks.air || this.worldObj.getBlock((int) Math.round(this.posX) + 1, (int) Math.floor(this.posY), (int) Math.round(this.posZ)) != Blocks.air || this.worldObj.getBlock((int) Math.round(this.posX) - 1, (int) Math.floor(this.posY), (int) Math.round(this.posZ)) != Blocks.air || this.worldObj.getBlock((int) Math.round(this.posX), (int) Math.floor(this.posY), (int) Math.round(this.posZ) + 1) != Blocks.air || this.worldObj.getBlock((int) Math.round(this.posX), (int) Math.floor(this.posY), (int) Math.round(this.posZ) - 1) != Blocks.air || this.worldObj.getBlock((int) Math.round(this.posX), (int) Math.floor(this.posY) + 1, (int) Math.round(this.posZ)) != Blocks.air) && this.getTextureName() == "snowstormArrow") {
                 this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F, false);
