@@ -14,62 +14,70 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
-public class EntityEternalArcher extends EntityDivineRPGBoss{
-	
+public class EntityEternalArcher extends EntityDivineRPGBoss {
+
 	private int armSelected;
-	private int abilityTick;
+	private int abilityTick = 1;
 
 	public EntityEternalArcher(World world) {
 		super(world);
-		this.setSize(3, 5);
-		this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 80));
-		this.experienceValue = 250;
+		setSize(3, 5);
+		tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 80));
+		experienceValue = 250;
 	}
-	
+
 	@Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.eternalArcherHealth);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.eternalArcherSpeed);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.eternalArcherFollowRange);
-    }
-	
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.eternalArcherHealth);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.eternalArcherSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.eternalArcherFollowRange);
+	}
+
 	@Override
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
-		
-		if(this.entityToAttack != null) this.getLookHelper().setLookPosition(this.entityToAttack.posX, this.entityToAttack.posY + (double)this.entityToAttack.getEyeHeight(), this.entityToAttack.posZ, 10.0F, 5);
-		
-		if(this.entityToAttack == null || this.rand.nextInt(200) == 0) this.entityToAttack = this.worldObj.getClosestVulnerablePlayerToEntity(this, 48);
-		if(this.entityToAttack != null && ((this.entityToAttack instanceof EntityPlayer && ((EntityPlayer)this.entityToAttack).capabilities.isCreativeMode) || this.entityToAttack.isDead)) this.entityToAttack = null;
-		if(this.abilityTick > 0) this.abilityTick--;
-		if(this.abilityTick == 0) {
-			if(this.armSelected < 5) this.armSelected++;
-			else if(this.armSelected == 5) this.armSelected = 0;
-			this.abilityTick = 400;
+
+		if (entityToAttack != null)
+			getLookHelper().setLookPosition(entityToAttack.posX, entityToAttack.posY + entityToAttack.getEyeHeight(), entityToAttack.posZ, 10.0F, 5);
+
+		if (entityToAttack == null || rand.nextInt(200) == 0)
+			entityToAttack = worldObj.getClosestVulnerablePlayerToEntity(this, 48);
+
+		if (entityToAttack != null && ((entityToAttack instanceof EntityPlayer && ((EntityPlayer) entityToAttack).capabilities.isCreativeMode) || entityToAttack.isDead))
+			entityToAttack = null;
+
+		abilityTick--;
+		if (abilityTick == 0) {
+			if (armSelected < 5)
+				armSelected++;
+			else if (armSelected == 5)
+				armSelected = 0;
+			abilityTick = 400;
 		}
-		
-		if(this.abilityTick%30 == 0 && this.entityToAttack != null && !this.worldObj.isRemote) {
-			this.worldObj.spawnEntityInWorld(new EntityEternalArcherArrow(this.worldObj, this, (EntityLivingBase)this.entityToAttack, this.armSelected));
+
+		if (!worldObj.isRemote && entityToAttack != null && abilityTick % 30 == 0) {
+			worldObj.spawnEntityInWorld(new EntityEternalArcherArrow(worldObj, this, (EntityLivingBase) entityToAttack, armSelected));
 		}
 	}
-	
+
 	@Override
 	public void dropFewItems(boolean beenHit, int lootingLevel) {
-		switch(this.rand.nextInt(2)) {
+		switch (rand.nextInt(2)) {
 		case 0:
-			this.dropItem(TwilightItemsArmor.haliteBoots, 1);
+			dropItem(TwilightItemsArmor.haliteBoots, 1);
 			break;
 		case 1:
-			this.dropItem(TwilightItemsArmor.haliteHelmet, 1);
+			dropItem(TwilightItemsArmor.haliteHelmet, 1);
 		}
-		if(this.rand.nextInt(2) == 0)this.dropItem(Item.getItemFromBlock(VanillaBlocks.eternalArcherStatue), 1);
+		if (rand.nextInt(2) == 0)
+			dropItem(Item.getItemFromBlock(VanillaBlocks.eternalArcherStatue), 1);
 	}
-	
+
 	public int getSelectedArm() {
 		return this.armSelected;
 	}
-	
+
 	@Override
 	public ItemStack getHeldItem() {
 		return new ItemStack(TwilightItemsWeapons.haliteBow);

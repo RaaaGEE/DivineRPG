@@ -4,110 +4,114 @@ import net.divinerpg.entities.base.EntityDivineRPGMob;
 import net.divinerpg.libs.Sounds;
 import net.divinerpg.utils.items.ItemsFood;
 import net.divinerpg.utils.items.TwilightItemsOther;
-import net.divinerpg.utils.items.VetheaItems;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
 public class EntityBehemoth extends EntityDivineRPGMob {
-	
-    public int eatX;
-    public int eatY;
-    public int eatZ;
-    private boolean shouldEat = false;
-    private int ability;
-    float moveSpeed = 1;
+	private final static float moveSpeed = 1.0f;
+	private int eatX;
+	private int eatY;
+	private int eatZ;
+	private boolean shouldEat = false;
+	private int ability;
 
-    public EntityBehemoth(World var1) {
-        super(var1);
-        addAttackingAI();
-        this.setSize(1.2f, 1);
-    }
+	public EntityBehemoth(World world) {
+		super(world);
+		addAttackingAI();
+		setSize(1.2f, 1);
+	}
 
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothHealth);
-        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothDamage);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothSpeed);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothFollowRange);
-    }
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.behemothFollowRange);
+	}
 
-    @Override
-    protected void updateAITasks() {
-    	if (this.getHealth() < this.getMaxHealth() * 0.5 && !this.shouldEat) {
-    		for (int i = (int)this.posX - 16; i < (int)this.posX + 16; i++) {
-    			for (int j = (int)this.posZ - 16; j < (int)this.posZ + 16; j++) {
-    				for(int n = (int)this.posY - 2; n < (int)this.posY + 2; n++) {
-        				boolean var1 = this.worldObj.getBlock(i, (int)this.posY, j).getMaterial() == Material.wood;
-        				if (var1) {
-        					this.shouldEat = true;
-        					this.eatX = i;
-        					this.eatY = (int)this.posY;
-        					this.eatZ = j;
-        				}
-    				}
-        		}
-    		}
-    	}
-    	if(this.shouldEat && this.getHealth() >= this.getMaxHealth() * 0.5) this.shouldEat = false;
-    	super.updateAITasks();
-    }
-    
-    @Override
-    public void onLivingUpdate() {
-        super.onLivingUpdate();
-        
-        if(this.shouldEat && this.worldObj.getBlock(this.eatX, this.eatY, this.eatZ).getMaterial() != Material.wood) this.shouldEat = false;
+	@Override
+	protected void updateAITasks() {
+		if (!shouldEat && getHealth() < getMaxHealth() * 0.5) {
+			// look to around for wood blocks only onto current height
+			loop: for (int i = (int) posX - 16; i < (int) posX + 16; i++) { 
+				for (int j = (int) posZ - 16; j < (int) posZ + 16; j++) {
+					boolean isWoodBlock = worldObj.getBlock(i, (int) posY, j).getMaterial() == Material.wood;
+					if (isWoodBlock) {
+						shouldEat = true;
+						eatX = i;
+						eatY = (int) this.posY;
+						eatZ = j;
+						break loop;
+					}
+				}
+			}
+		}
 
-        if(this.shouldEat && this.ability == 0) {
-            if (this.getDistance(eatX, eatY, eatZ) < 2) {
-                this.heal(70/8);
-                this.worldObj.setBlock(eatX, eatY, eatZ, Blocks.air);
-                this.shouldEat = false;
-                this.ability = 5;
-            } else {
-                this.getNavigator().tryMoveToXYZ(eatX, eatY, eatZ, moveSpeed);
-                this.getLookHelper().setLookPosition(eatX, eatY, eatZ, 15F, 15F);
-                this.moveEntityWithHeading(0F, moveSpeed / 4);
-            }
-        }
-        else if (this.shouldEat && this.ability > 0) {
-            this.ability--;
-        }
-    }
+		super.updateAITasks();
+	}
 
-    @Override
-    protected float getSoundVolume() {
-        return 0.7F;
-    }
+	@Override
+	public void onLivingUpdate() {
+		super.onLivingUpdate();
 
-    @Override
-    protected String getLivingSound() {
-        return Sounds.endiku.getPrefixedName();
-    }
+		if (!shouldEat) {
+			return;
+		}
 
-    @Override
-    protected String getHurtSound() {
-        return Sounds.endikuHurt.getPrefixedName();
-    }
+		if (worldObj.getBlock(eatX, eatY, eatZ).getMaterial() != Material.wood) {
+			shouldEat = false;
+			return;
+		}
 
-    @Override
-    protected String getDeathSound() {
-        return getHurtSound();
-    }
+		if (getDistance(eatX, eatY, eatZ) < 2) {
+			heal(70 / 8);
+			worldObj.setBlock(eatX, eatY, eatZ, Blocks.air);
+			shouldEat = false;
+			ability = 5;
+		} else {
+			if (ability == 0) {
+				getNavigator().tryMoveToXYZ(eatX, eatY, eatZ, moveSpeed);
+				getLookHelper().setLookPosition(eatX, eatY, eatZ, 15F, 15F);
+				moveEntityWithHeading(0F, moveSpeed / 4);
+			} else {
+				ability--;
+			}
+		}
+	}
 
-    @Override
-    protected void dropFewItems(boolean par1, int par2) {
-        this.dropItem(TwilightItemsOther.wildwoodSoul, this.rand.nextInt(3 + par2));
-        this.dropItem(ItemsFood.magicMeat, 1);
-    }
+	@Override
+	protected float getSoundVolume() {
+		return 0.7F;
+	}
 
-    @Override
-    public boolean isValidLightLevel() {
-        return true;
-    }
+	@Override
+	protected String getLivingSound() {
+		return Sounds.endiku.getPrefixedName();
+	}
+
+	@Override
+	protected String getHurtSound() {
+		return Sounds.endikuHurt.getPrefixedName();
+	}
+
+	@Override
+	protected String getDeathSound() {
+		return getHurtSound();
+	}
+
+	@Override
+	protected void dropFewItems(boolean beenHit, int lootLevel) {
+		dropItem(TwilightItemsOther.wildwoodSoul, rand.nextInt(3 + lootLevel));
+		dropItem(ItemsFood.magicMeat, 1);
+	}
+
+	@Override
+	public boolean isValidLightLevel() {
+		return true;
+	}
 
 	@Override
 	public String mobName() {

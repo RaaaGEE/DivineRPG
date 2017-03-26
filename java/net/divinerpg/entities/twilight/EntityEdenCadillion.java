@@ -12,18 +12,18 @@ public class EntityEdenCadillion extends EntityDivineRPGMob {
 
 	public EntityEdenCadillion(World var1) {
 		super(var1);
-		this.setSize(1.0F, 1.3F);
+		setSize(1.0F, 1.3F);
 		addAttackingAI();
-		this.experienceValue = 40;
+		experienceValue = 40;
 	}
 
 	@Override
 	protected void applyEntityAttributes() {
 	    super.applyEntityAttributes();
-	    this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionHealth);
-	    this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionDamage);
-	    this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionSpeed);
-	    this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionFollowRange);
+	    getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionHealth);
+	    getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionDamage);
+	    getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionSpeed);
+	    getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.edenCadillionFollowRange);
 	}
 	
 	@Override
@@ -42,12 +42,15 @@ public class EntityEdenCadillion extends EntityDivineRPGMob {
 	}
 
 	@Override
-	protected void dropFewItems(boolean var1, int var2) {
-		int var3 = this.rand.nextInt(2 + var2);
-		if(this.isBurning()) this.dropItem(ItemsFood.empoweredMeat, 1);
-        else this.dropItem(ItemsFood.rawEmpoweredMeat, 1);
-		for(int var4 = 0; var4 < var3; ++var4) {
-			this.dropItem(TwilightItemsOther.edenSoul, 1);
+	protected void dropFewItems(boolean beenHit, int lootingLevel) {
+		if(isBurning()) 
+			dropItem(ItemsFood.empoweredMeat, 1);
+        else 
+        	dropItem(ItemsFood.rawEmpoweredMeat, 1);
+		
+		final int stackCount = rand.nextInt(2 + lootingLevel);
+		for(int i = 0; i < stackCount; i++) {
+			dropItem(TwilightItemsOther.edenSoul, 1);
 		}
 	}
 

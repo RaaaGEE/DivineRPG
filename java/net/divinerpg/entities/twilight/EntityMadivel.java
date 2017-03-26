@@ -4,62 +4,56 @@ import net.divinerpg.entities.base.EntityDivineRPGMob;
 import net.divinerpg.libs.Sounds;
 import net.divinerpg.utils.items.ItemsFood;
 import net.divinerpg.utils.items.TwilightItemsOther;
-import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
 public class EntityMadivel extends EntityDivineRPGMob {
-	
-    public EntityMadivel(World var1) {
-        super(var1);
-        addBasicAI();
-        addAttackingAI();
-    }
 
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelHealth);
-        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelDamage);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelSpeed);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelFollowRange);
-    }
+	public EntityMadivel(World var1) {
+		super(var1);
+		addBasicAI();
+		addAttackingAI();
+	}
 
-    @Override
-    protected String getLivingSound() {
-        return Sounds.getSoundName(Sounds.madivel);
-    }
- 
-    @Override
-    protected String getHurtSound() {
-        return Sounds.getSoundName(Sounds.madivelHurt);
-    }
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.madivelFollowRange);
+	}
 
-    @Override
-    protected String getDeathSound() {
-        return Sounds.getSoundName(Sounds.madivelHurt);
-    }
- 
-    @Override
-    protected Item getDropItem() {
-        return TwilightItemsOther.edenSoul;
-    }
- 
-    @Override
-    protected void dropFewItems(boolean var1, int var2) {
-        super.dropFewItems(var1, var2);
-        if(this.isBurning()) this.dropItem(ItemsFood.empoweredMeat, 1);
-        else this.dropItem(ItemsFood.rawEmpoweredMeat, 1);
-    }
+	@Override
+	protected String getLivingSound() {
+		return Sounds.getSoundName(Sounds.madivel);
+	}
+
+	@Override
+	protected String getHurtSound() {
+		return Sounds.getSoundName(Sounds.madivelHurt);
+	}
+
+	@Override
+	protected String getDeathSound() {
+		return Sounds.getSoundName(Sounds.madivelHurt);
+	}
+
+	@Override
+	protected Item getDropItem() {
+		return TwilightItemsOther.edenSoul;
+	}
+
+	@Override
+	public void dropFewItems(boolean beenHit, int lootingLevel) {
+		super.dropFewItems(beenHit, lootingLevel);
+		
+		if (isBurning())
+			dropItem(ItemsFood.empoweredMeat, 1);
+		else
+			dropItem(ItemsFood.rawEmpoweredMeat, 1);
+	}
 
 	@Override
 	public String mobName() {

@@ -53,6 +53,7 @@ public class EntityEdenCori extends EntityDivineRPGFlying {
 		super.onUpdate();
 		if (!worldObj.isRemote && worldObj.difficultySetting == EnumDifficulty.PEACEFUL) {
 			setDead();
+			return;
 		}
 
 		despawnEntity();
