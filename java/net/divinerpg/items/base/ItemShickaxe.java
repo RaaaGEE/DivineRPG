@@ -1,5 +1,6 @@
 package net.divinerpg.items.base;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,11 +46,12 @@ public class ItemShickaxe extends ItemTool {
     }
 
     @Override
-    public boolean canItemHarvestBlock(Block block) {
+    public boolean func_150897_b/*canItemHarvestBlock*/(Block block) {
         return isEfficient(block);
     }
 
-    public float getStrVsBlock(ItemStack stack, Block block) {
+    @Override
+    public float func_150893_a/*getStrVsBlock*/(ItemStack stack, Block block) {
         return this.toolMaterial.getEfficiencyOnProperMaterial();
     }
 
@@ -88,7 +90,7 @@ public class ItemShickaxe extends ItemTool {
 
         if (par7 != 0 && world.getBlock(x, y + 1, z).isAir(world, x, y + 1, z) && (block == Blocks.grass || block == Blocks.dirt)) {
             Block block1 = Blocks.farmland;
-            world.playSoundEffect((double) ((float) x + 0.5F), (double) ((float) y + 0.5F), (double) ((float) z + 0.5F), block1.stepSound.getStepSound(), (block1.stepSound.getVolume() + 1.0F) / 2.0F, block1.stepSound.getFrequency() * 0.8F);
+            world.playSoundEffect((double) ((float) x + 0.5F), (double) ((float) y + 0.5F), (double) ((float) z + 0.5F), block1.stepSound.getStepResourcePath(), (block1.stepSound.getVolume() + 1.0F) / 2.0F, block1.stepSound.getPitch() * 0.8F);
 
             if (world.isRemote) return true;
 
@@ -102,7 +104,7 @@ public class ItemShickaxe extends ItemTool {
     @Override
     public void addInformation(ItemStack item, EntityPlayer player, List infoList, boolean par4) {
         infoList.add(TooltipLocalizer.efficiency(toolMaterial.getEfficiencyOnProperMaterial()));
-        if(item.getMaxDurability() != -1) infoList.add(TooltipLocalizer.usesRemaining(item.getMaxDurability() - item.getMetadata()));
+        if(item.getMaxDamage() != -1) infoList.add(TooltipLocalizer.usesRemaining(item.getMaxDamage() - item.getItemDamage()));
         else infoList.add(TooltipLocalizer.infiniteUses());
     }
 }

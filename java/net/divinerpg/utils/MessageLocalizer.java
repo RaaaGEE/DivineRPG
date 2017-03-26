@@ -16,7 +16,7 @@ public class MessageLocalizer {
     }
     
     public static String standard(String player) {
-        return Util.AQUA + StatCollector.translateToLocal(STAND).replace("#", player).replace("&", Util.GREEN + "DivineRPG");
+        return Util.AQUA + StatCollector.translateToLocal(STAND).replace("#", player).replace("&", Util.GREEN + "DivineRPG Hack");
     }
     
     public static String version(String vers) {

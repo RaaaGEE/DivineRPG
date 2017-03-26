@@ -14,7 +14,7 @@ public class GuiLivestockMerchant extends GuiDivineMerchant {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int var1, int var2) {
-		this.drawCenteredString(Minecraft.getMinecraft().fontRendererObj, name, 90, 6, 0x4EC215);
+		this.drawCenteredString(Minecraft.getMinecraft().fontRenderer, name, 90, 6, 0x4EC215);
 		this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 96 + 2, 0x4EC215);
 	}
 	@Override

@@ -54,15 +54,15 @@ public class EntityTheEye extends EntityDivineRPGMob {
     public void onLivingUpdate() {
         super.onLivingUpdate();
         EntityPlayer p = this.worldObj.getClosestVulnerablePlayerToEntity(this, 64.0D);
-        if(p != null) {
+        if(p != null && !p.isPotionActive(Potion.blindness)) {
             Vec3 lookVec = p.getLook(1.0F).normalize();
             Vec3 lookAtMeVec = Vec3.createVectorHelper(this.posX - p.posX, this.boundingBox.minY + this.height - (p.posY + p.getEyeHeight()), this.posZ - p.posZ);
             double distMagnitude = lookAtMeVec.lengthVector();
             lookAtMeVec = lookAtMeVec.normalize();
             double var7 = lookVec.dotProduct(lookAtMeVec);
             if(var7 > 1.0D - 0.025D / distMagnitude && p.canEntityBeSeen(this)) {
-                p.addPotionEffect(new PotionEffect(Potion.blindness.id, 100, 0, true));
-                p.triggerAchievement(DivineRPGAchievements.eyeOfEvil);
+				p.addPotionEffect(new PotionEffect(Potion.blindness.id, 100, 0, true));
+				p.triggerAchievement(DivineRPGAchievements.eyeOfEvil);
             }
         }
     }

@@ -38,8 +38,10 @@ public class EntityMoonWolf extends EntityDivineRPGTameable {
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
-        if(!this.isTamed())this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.moonWolfHealth);
-        else this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20);
+        if(!this.isTamed())
+        	this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.moonWolfHealth);
+        else 
+        	this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20);
         this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.moonWolfFollowRange);
     }
     
@@ -65,7 +67,7 @@ public class EntityMoonWolf extends EntityDivineRPGTameable {
     }
 
     @Override
-    protected void playStepSound(int x, int y, int z, Block steppedOn) {
+    protected void func_145780_a/*playStepSound*/(int x, int y, int z, Block steppedOn) {
         this.playSound("mob.wolf.step", 0.15F, 1.0F);
     }
 
@@ -83,7 +85,13 @@ public class EntityMoonWolf extends EntityDivineRPGTameable {
 
     @Override
     protected String getLivingSound() {
-        return this.isAngry() ? "mob.wolf.growl" : (this.rand.nextInt(3) == 0 ? (this.isTamed() && this.dataWatcher.getWatchableObjectFloat(18) < 10.0F ? "mob.wolf.whine" : "mob.wolf.panting") : "mob.wolf.bark");
+        return this.isAngry() ? 
+        		"mob.wolf.growl" : 
+        			(this.rand.nextInt(3) == 0 ? 
+        					(this.isTamed() && this.dataWatcher.getWatchableObjectFloat(18) < 10.0F ? 
+        							"mob.wolf.whine" : 
+        							"mob.wolf.panting") : 
+        					"mob.wolf.bark");
     }
 
     @Override
@@ -119,7 +127,8 @@ public class EntityMoonWolf extends EntityDivineRPGTameable {
         
         if(this.isAngry()) {
             this.setAttackTarget(this.worldObj.getClosestVulnerablePlayerToEntity(this, 24));
-            if(this.rand.nextInt(400) == 0 && this.getAttackTarget() == null) this.setAngry(false);
+            if(this.rand.nextInt(400) == 0 && this.getAttackTarget() == null) 
+            	this.setAngry(false);
         }
     }
 
@@ -223,7 +232,8 @@ public class EntityMoonWolf extends EntityDivineRPGTameable {
                 par2 = (par2 + 1.0F) / 2.0F;
             }
             
-            if(entity instanceof EntityPlayer && !this.isTamed()) this.setAngry(true);
+            if(entity instanceof EntityPlayer && !this.isTamed()) 
+            	this.setAngry(true);
 
             return super.attackEntityFrom(source, par2);
         }
@@ -245,7 +255,7 @@ public class EntityMoonWolf extends EntityDivineRPGTameable {
                 if(food.isWolfsFavoriteMeat() && this.dataWatcher.getWatchableObjectFloat(18) < 200.0F) {
                     if(!player.capabilities.isCreativeMode) --stack.stackSize;
 
-                    this.heal((float)food.getHealAmount(stack));
+                    this.heal((float)food.func_150905_g/*getHealAmount*/(stack));
 
                     if(stack.stackSize <= 0)
                         player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);

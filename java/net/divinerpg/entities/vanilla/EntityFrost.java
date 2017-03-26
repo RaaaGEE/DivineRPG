@@ -131,6 +131,8 @@ public class EntityFrost extends EntityDivineRPGMob {
 	
 	@Override
 	public boolean getCanSpawnHere() {
-        return this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && this.worldObj.checkNoEntityCollision(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.addCoord(0, 0.5, 0)).isEmpty();
+        return this.worldObj.difficultySetting != EnumDifficulty.PEACEFUL 
+        		&& this.worldObj.checkNoEntityCollision(this.boundingBox) 
+        		&& this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.addCoord(0, 0.5, 0)).isEmpty();
     }
 }

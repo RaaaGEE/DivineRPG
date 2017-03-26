@@ -88,7 +88,7 @@ public class Util {
         entityName = "DRPG" + entityName;
         EntityList.stringToClassMapping.put(entityName, entityClass);
         EntityList.classToStringMapping.put(entityClass, entityName);
-        EntityList.idToClassMap.put(id, entityClass);
+        EntityList.IDtoClassMapping.put(id, entityClass);
         ((Map)ObfuscationReflectionHelper.getPrivateValue(EntityList.class, null, new String[]{"f", "field_75624_e", "classToIDMapping"})).put(entityClass, id);
         ((Map)ObfuscationReflectionHelper.getPrivateValue(EntityList.class, null, new String[]{"g", "field_75622_f", "stringToIDMapping"})).put(entityName, id);
         EntityList.entityEggs.put(id, new EntityEggInfo(id, 0x000000, 0xFFFFFF));
@@ -101,7 +101,7 @@ public class Util {
         entityName = "DRPG" + entityName;
         EntityList.stringToClassMapping.put(entityName, entityClass);
         EntityList.classToStringMapping.put(entityClass, entityName);
-        EntityList.idToClassMap.put(id, entityClass);
+        EntityList.IDtoClassMapping.put(id, entityClass);
         ((Map)ObfuscationReflectionHelper.getPrivateValue(EntityList.class, null, new String[]{"f", "field_75624_e", "classToIDMapping"})).put(entityClass, id);
         ((Map)ObfuscationReflectionHelper.getPrivateValue(EntityList.class, null, new String[]{"g", "field_75622_f", "stringToIDMapping"})).put(entityName, id);
     }
@@ -217,14 +217,6 @@ public class Util {
         GameRegistry.registerBlock(stack, ItemModSlab.class, ((BlockModSlab)stack).NAME + "Double", (BlockModSlab)single, (BlockModSlab)stack, true);
     }
     
-    //TODO: USE UUIDs!!!!!!!!!!!!!!!!!!!
-    public static boolean isDeveloperName(String name) {
-		for(int i = 0; i < devs.length; i++){
-			if(name.equalsIgnoreCase(devs[i]))return true;
-		}
-		return false;
-	}
-    
     public static DamageSource causeArcanaDamage(Entity projectile, Entity shooter) {
         return new EntityDamageSourceIndirect("arrow", projectile, shooter).setMagicDamage();
     }
@@ -272,7 +264,7 @@ public class Util {
         Vec3 pos = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3 look = player.getLook(1);
         Vec3 vec32 = pos.addVector(look.xCoord * distance, look.yCoord * distance, look.zCoord * distance);
-        return player.worldObj.rayTraceBlocks(pos, vec32, false, false, true);
+        return player.worldObj.func_147447_a(pos, vec32, false, false, true); //rayTraceBlocks
     }
     
     public static boolean bordersTar(World w, int x, int y, int z) {

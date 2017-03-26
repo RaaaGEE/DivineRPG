@@ -21,34 +21,36 @@ public class EntityBunny extends EntityDivineRPGTameable {
 
 	public EntityBunny(World var1) {
 		super(var1);
-		this.setSize(0.5F, 0.5F);
-		this.experienceValue = 40;
+		setSize(0.5F, 0.5F);
+		experienceValue = 40;
 	}
 	
 	@Override
 	public void entityInit() {
 	    super.entityInit();
-	    this.dataWatcher.addObject(19, 0);
+	    dataWatcher.addObject(19, 0);
 	}
 
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		if(!this.isTamed())this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.bunnyHealth);
-		else this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20);
-		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.bunnySpeed);
-		this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.bunnyFollowRange);
+		if(!isTamed())
+			getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.bunnyHealth);
+		else 
+			getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.bunnySpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.bunnyFollowRange);
 	}
 
 	@Override
 	protected boolean canDespawn() {
-		return !this.isTamed();
+		return !isTamed();
 	}
 
 	@Override
 	public void onDeath(DamageSource var1) {
 		super.onDeath(var1);
-		if(!this.worldObj.isRemote && !this.isTamed()) {
+		if(!worldObj.isRemote && !isTamed()) {
 			Entity var3 = var1.getEntity();
 			if(var3 instanceof EntityPlayer) {
 				((EntityPlayer)var3).addStat(DivineRPGAchievements.friendOrFoe, 1);
@@ -59,27 +61,28 @@ public class EntityBunny extends EntityDivineRPGTameable {
 
 	@Override
 	public boolean attackEntityAsMob(Entity target) {
-		double i = EntityStats.bunnyDamage;
-		if(this.isTamed()) {
-			this.dataWatcher.updateObject(19, 1);
+		double damage = EntityStats.bunnyDamage;
+		if(isTamed()) {
+			dataWatcher.updateObject(19, 1);
 		}
-		return target.attackEntityFrom(DamageSource.causeMobDamage(this), (float)i);
+		return target.attackEntityFrom(DamageSource.causeMobDamage(this), (float)damage);
 	}
 	
 	@Override
 	public void onUpdate() {
 	    super.onUpdate();
-	    if(!this.worldObj.isRemote) {
-	        if(this.isTamed() && this.getAttackTarget() == null) this.dataWatcher.updateObject(19, 0);
+	    if(!worldObj.isRemote) {
+	        if(isTamed() && getAttackTarget() == null) 
+	        	dataWatcher.updateObject(19, 0);
 	    }
 	}
 
 	private void transform()  {
-		if(!this.worldObj.isRemote) {
-			EntityAngryBunny e = new EntityAngryBunny(this.worldObj);
-			e.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
-			this.worldObj.spawnEntityInWorld(e);
-			this.setDead();
+		if(!worldObj.isRemote) {
+			EntityAngryBunny e = new EntityAngryBunny(worldObj);
+			e.setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
+			worldObj.spawnEntityInWorld(e);
+			setDead();
 		}
 	}
 
@@ -87,25 +90,25 @@ public class EntityBunny extends EntityDivineRPGTameable {
 	public boolean interact(EntityPlayer player) {
 		ItemStack held = player.inventory.getCurrentItem();
 
-		if(this.isTamed()) {
+		if(isTamed()) {
 			if(held != null && held.getItem() instanceof ItemFood) {
 				ItemFood food = (ItemFood)held.getItem();
 
-				if(food.isWolfsFavoriteMeat() && this.getHealth() < 20) {
+				if(food.isWolfsFavoriteMeat() && getHealth() < 20) {
 					if(!player.capabilities.isCreativeMode) {
 						--held.stackSize;
 					}
-					this.heal((float)food.getHealAmount(held));
+					heal((float)food.func_150905_g/*getHealAmount*/(held));
 					if(held.stackSize <= 0) {
 						player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 					}
 					return true;
 				}
 			}
-			if(player.getUniqueID().toString().equals(this.func_152113_b()) && !this.worldObj.isRemote) {
-				this.aiSit.setSitting(!this.isSitting());
-				this.isJumping = false;
-				this.setPathToEntity((PathEntity)null);
+			if(player.getUniqueID().toString().equals(func_152113_b()) && !this.worldObj.isRemote) {
+				aiSit.setSitting(!isSitting());
+				isJumping = false;
+				setPathToEntity((PathEntity)null);
 			}
 		}
 		else if(held != null && held.getItem() == TwilightItemsOther.edenSparkles) {
@@ -117,20 +120,20 @@ public class EntityBunny extends EntityDivineRPGTameable {
 				player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
 			}
 
-			if(!this.worldObj.isRemote) {
-				if(this.rand.nextInt(3) == 0) {
-					this.setTamed(true);
-					this.setPathToEntity((PathEntity)null);
-					this.setAttackTarget((EntityLiving)null);
-					this.aiSit.setSitting(true);
-					this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20);
-					this.setHealth(20);
-					this.func_152115_b(player.getUniqueID().toString());
-					this.playTameEffect(true);
-					this.worldObj.setEntityState(this, (byte)7);
+			if(!worldObj.isRemote) {
+				if(rand.nextInt(3) == 0) {
+					setTamed(true);
+					setPathToEntity((PathEntity)null);
+					setAttackTarget((EntityLiving)null);
+					aiSit.setSitting(true);
+					getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20);
+					setHealth(20);
+					func_152115_b(player.getUniqueID().toString());
+					playTameEffect(true);
+					worldObj.setEntityState(this, (byte)7);
 				} else {
-					this.playTameEffect(false);
-					this.worldObj.setEntityState(this, (byte)6);
+					playTameEffect(false);
+					worldObj.setEntityState(this, (byte)6);
 				}
 			}
 			return true;
@@ -155,7 +158,8 @@ public class EntityBunny extends EntityDivineRPGTameable {
 	
 	@Override
 	protected void dropFewItems(boolean beenHit, int lootingLevel) {
-		if(this.rand.nextInt(2) == 0) this.dropItem(TwilightItemsOther.edenSoul, 1+lootingLevel);
+		if(rand.nextBoolean()) 
+			dropItem(TwilightItemsOther.edenSoul, 1+lootingLevel);
 	}
 
 	@Override
@@ -171,7 +175,8 @@ public class EntityBunny extends EntityDivineRPGTameable {
 	@Override
 	public EntityLivingBase getAttackTarget() {
 	    EntityLivingBase e = super.getAttackTarget();
-	    if(e != null && ((this.isTamed() && this.getDistanceSqToEntity(e) < 144) || !this.isTamed())) return e;
+	    if(e != null && ((isTamed() && getDistanceSqToEntity(e) < 144) || !isTamed())) 
+	    	return e;
 	    return null;
 	}
 }

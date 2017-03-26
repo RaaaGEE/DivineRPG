@@ -21,9 +21,9 @@ public class BlockModSlab extends BlockSlab {
         super(stack, base.blockType.getMaterial());
         setHardness(base.getBlockHardness(null, 0, 0, 0));
         setResistance((base.getExplosionResistance(null) * 5) / 3);
-        setTextureName(Reference.PREFIX + base.name);
+        setBlockTextureName(Reference.PREFIX + base.name);
         NAME = base.name.replace(remove, "") + "Slab";
-        setUnlocalizedName(NAME);
+        setBlockName(NAME);
         if (!stack) {
             LangRegistry.addBlock(this);
             setCreativeTab(DivineRPGTabs.blocks);
@@ -33,7 +33,7 @@ public class BlockModSlab extends BlockSlab {
     }
 
     @Override
-    public String getFullSlabName(int i) {
+    public String func_150002_b/*getFullSlabName*/(int i) {
         return super.getUnlocalizedName();
     }
 

@@ -36,7 +36,6 @@ import net.divinerpg.utils.LogHelper;
 import net.divinerpg.utils.Util;
 import net.divinerpg.utils.events.ArcanaHelper;
 import net.divinerpg.utils.events.ClientTicker;
-import net.divinerpg.utils.events.DevHatEvent;
 import net.divinerpg.utils.events.EventExtraArmor;
 import net.divinerpg.utils.events.EventOverlay;
 import net.divinerpg.utils.items.ArcanaItems;
@@ -97,7 +96,6 @@ public class ClientProxy extends CommonProxy {
         VetheaEntityRenderer.init();
         ArcanaEntityRenderer.init();
         Util.postFMLEvent(new BossTickHandler());
-        Util.postForgeEvent(new DevHatEvent());
     }
     
     @Override
