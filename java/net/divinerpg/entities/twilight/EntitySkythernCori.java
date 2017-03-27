@@ -3,176 +3,153 @@ package net.divinerpg.entities.twilight;
 import net.divinerpg.entities.base.EntityDivineRPGFlying;
 import net.divinerpg.entities.twilight.projectile.EntityCoriShot;
 import net.divinerpg.libs.Sounds;
+import net.divinerpg.utils.WorldUtils;
 import net.divinerpg.utils.items.TwilightItemsOther;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
 public class EntitySkythernCori extends EntityDivineRPGFlying {
-	
-    public int courseChangeCooldown = 0;
-    public double waypointX;
-    public double waypointY;
-    public double waypointZ;
-    private Entity targetedEntity = null;
-    private int aggroCooldown = 0;
-    public int prevAttackCounter = 0;
-    public int attackCounter = 0;
-    private ChunkCoordinates currentFlightTarget;
-    
-    public EntitySkythernCori(World var1) {
-        super(var1);
-    }
-    
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernCoriHealth);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernCoriSpeed);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernCoriFollowRange);
-    }
 
-    protected void entityInit() {
-        super.entityInit();
-        this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
-    }
-    
-    @Override
-    public void onUpdate() {
-    	super.onUpdate();
-    	if(!this.worldObj.isRemote && this.worldObj.difficultySetting == EnumDifficulty.PEACEFUL) {
-            this.setDead();
-        }
+	private int courseChangeCooldown = 1;
+	private double waypointX = Double.NaN;
+	private double waypointY = Double.NaN;
+	private double waypointZ = Double.NaN;
+	private Entity targetedEntity = null;
+	private int aggroCooldown = 0;
+	private int attackCounter = 0;
 
-        this.despawnEntity();
-        this.prevAttackCounter = this.attackCounter;
-        double d0 = this.waypointX - this.posX;
-        double d1 = this.waypointY - this.posY;
-        double d2 = this.waypointZ - this.posZ;
-        double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+	public EntitySkythernCori(World var1) {
+		super(var1);
+	}
 
-        if(d3 < 1.0D || d3 > 3600.0D) {
-            this.waypointX = this.posX + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            this.waypointY = this.posY + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            this.waypointZ = this.posZ + (double)((this.rand.nextFloat() * 2.0F - 1.0F) * 16.0F);
-        }
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernCoriHealth);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernCoriSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernCoriFollowRange);
+	}
 
-        if(this.courseChangeCooldown-- <= 0) {
-            this.courseChangeCooldown += this.rand.nextInt(5) + 2;
-            d3 = (double)MathHelper.sqrt_double(d3);
+	@Override
+	protected void entityInit() {
+		super.entityInit();
+		dataWatcher.addObject(16, Byte.valueOf((byte) 0));
+	}
 
-            if(this.isCourseTraversable(this.waypointX, this.waypointY, this.waypointZ, d3)) {
-                this.motionX += d0 / d3 * 0.1D;
-                this.motionY += d1 / d3 * 0.1D;
-                this.motionZ += d2 / d3 * 0.1D;
-            } else {
-                this.waypointX = this.posX;
-                this.waypointY = this.posY;
-                this.waypointZ = this.posZ;
-            }
-        }
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		if (!worldObj.isRemote && worldObj.difficultySetting == EnumDifficulty.PEACEFUL) {
+			setDead();
+			return;
+		}
 
-        if(this.targetedEntity != null && this.targetedEntity.isDead) {
-            this.targetedEntity = null;
-        }
+		despawnEntity();
+		
+		final double dx = waypointX - posX;
+		final double dy = waypointY - posY;
+		final double dz = waypointZ - posZ;
+		double distance = dx * dx + dy * dy + dz * dz;
 
-        if(this.targetedEntity == null || this.aggroCooldown-- <= 0) {
-            this.targetedEntity = this.worldObj.getClosestVulnerablePlayerToEntity(this, 100.0D);
+		if (distance < 1.0D || distance > 3600.0D || distance == Double.NaN) {
+			waypointX = posX + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
+			waypointY = posY + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
+			waypointZ = posZ + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
+		}
 
-            if(this.targetedEntity != null) {
-                this.aggroCooldown = 20;
-            }
-        }
+		courseChangeCooldown--;
+		if (courseChangeCooldown == 0) {
+			courseChangeCooldown += rand.nextInt(5) + 2;
+			distance = MathHelper.sqrt_double(distance);
 
-        double d4 = 64.0D;
+			if (!WorldUtils.isCollide(posX, posY, posZ, waypointX, waypointY, waypointZ, worldObj, this, boundingBox.copy())) {
+				motionX += dx / distance * 0.1D;
+				motionY += dy / distance * 0.1D;
+				motionZ += dz / distance * 0.1D;
+			} else {
+				waypointX = posX;
+				waypointY = posY;
+				waypointZ = posZ;
+			}
+		}
 
-        if(this.targetedEntity != null && this.targetedEntity.getDistanceSqToEntity(this) < d4 * d4) {
-            double d5 = this.targetedEntity.posX - this.posX;
-            double d6 = this.targetedEntity.boundingBox.minY+1 - this.posY;
-            double d7 = this.targetedEntity.posZ - this.posZ;
-            this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(d5, d7)) * 180.0F / (float)Math.PI;
+		if (targetedEntity == null || targetedEntity.isDead || aggroCooldown-- <= 0) {
+			targetedEntity = worldObj.getClosestVulnerablePlayerToEntity(this, 100.0D);
 
-            if(this.canEntityBeSeen(this.targetedEntity)) {
-                ++this.attackCounter;
+			if (targetedEntity != null) {
+				aggroCooldown = 20;
+			}
+		}
 
-                if(this.attackCounter == 20) {
-            		this.worldObj.playSoundAtEntity(this.targetedEntity, Sounds.getSoundName(Sounds.coriShoot), 1.0F, 1.0F);
-            		EntityCoriShot shot = new EntityCoriShot(this.worldObj, this, 100);
-            		shot.setThrowableHeading(d5, d6, d7, 1.6f, 4);
-            		if(!this.worldObj.isRemote)this.worldObj.spawnEntityInWorld(shot);
-            		this.attackCounter = -40;
-                }
-            }
-            else if(this.attackCounter > 0) {
-                --this.attackCounter;
-            }
-        } else {
-            this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
+		if (targetedEntity != null && targetedEntity.getDistanceSqToEntity(this) < 64*64) {
+			double targetDx = targetedEntity.posX - posX;
+			double targetDy = targetedEntity.boundingBox.minY + 1 - posY;
+			double targetDz = targetedEntity.posZ - posZ;
+			renderYawOffset = rotationYaw = -((float) Math.atan2(targetDx, targetDz)) * 180.0F / (float) Math.PI;
 
-            if(this.attackCounter > 0) {
-                --this.attackCounter;
-            }
-        }
+			if (canEntityBeSeen(targetedEntity)) {
+				attackCounter++;
 
-        if(!this.worldObj.isRemote) {
-            byte b1 = this.dataWatcher.getWatchableObjectByte(16);
-            byte b0 = (byte)(this.attackCounter > 10 ? 1 : 0);
+				if (attackCounter == 20) {
+					worldObj.playSoundAtEntity(targetedEntity, Sounds.getSoundName(Sounds.coriShoot), 1.0F, 1.0F);
+					EntityCoriShot shot = new EntityCoriShot(worldObj, this, 100);
+					shot.setThrowableHeading(targetDx, targetDy, targetDz, 1.6f, 4);
+					if (!worldObj.isRemote)
+						worldObj.spawnEntityInWorld(shot);
+					attackCounter = -40;
+				}
+			} else if (attackCounter > 0) {
+				attackCounter--;
+			}
+		} else {
+			renderYawOffset = rotationYaw = -((float) Math.atan2(motionX, motionZ)) * 180.0F / (float) Math.PI;
 
-            if(b1 != b0) {
-                this.dataWatcher.updateObject(16, Byte.valueOf(b0));
-            }
-        }
-    }
+			if (attackCounter > 0) {
+				attackCounter--;
+			}
+		}
 
-    private boolean isCourseTraversable(double par1, double par3, double par5, double par7) {
-        double var9 = (this.waypointX - this.posX) / par7;
-        double var11 = (this.waypointY - this.posY) / par7;
-        double var13 = (this.waypointZ - this.posZ) / par7;
-        AxisAlignedBB var15 = this.boundingBox.copy();
+		if (!worldObj.isRemote) {
+			byte b1 = dataWatcher.getWatchableObjectByte(16);
+			byte b0 = (byte) (attackCounter > 10 ? 1 : 0);
 
-        for(int var16 = 1; (double)var16 < par7; ++var16) {
-            var15.offset(var9, var11, var13);
+			if (b1 != b0) {
+				dataWatcher.updateObject(16, Byte.valueOf(b0));
+			}
+		}
+	}
 
-            if(!this.worldObj.getCollidingBoundingBoxes(this, var15).isEmpty()) {
-                return false;
-            }
-        }
+	@Override
+	protected String getLivingSound() {
+		return Sounds.getSoundName(Sounds.coriIdle);
+	}
 
-        return true;
-    }
+	@Override
+	protected String getHurtSound() {
+		return Sounds.getSoundName(Sounds.coriHurt);
+	}
 
-    @Override
-    protected String getLivingSound() {
-        return Sounds.getSoundName(Sounds.coriIdle);
-    }
+	@Override
+	protected String getDeathSound() {
+		return Sounds.getSoundName(Sounds.coriHurt);
+	}
 
-    @Override
-    protected String getHurtSound() {
-        return Sounds.getSoundName(Sounds.coriHurt);
-    }
-
-    @Override
-    protected String getDeathSound() {
-        return Sounds.getSoundName(Sounds.coriHurt);
-    }
-
-    @Override
-    protected Item getDropItem() {
-        return TwilightItemsOther.skythernSoul;
-    }
+	@Override
+	protected Item getDropItem() {
+		return TwilightItemsOther.skythernSoul;
+	}
 
 	@Override
 	public String mobName() {
 		return "Advanced Cori";
 	}
-	
+
+	@Override
 	public int getMaxSpawnedInChunk() {
-	    return 1;
-    }
+		return 1;
+	}
 }

@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
 public class EntitySkythernFiend extends EntityDivineRPGMob {
-	
+
 	public EntitySkythernFiend(World var1) {
 		super(var1);
 		addAttackingAI();
@@ -16,11 +16,11 @@ public class EntitySkythernFiend extends EntityDivineRPGMob {
 
 	@Override
 	protected void applyEntityAttributes() {
-	    super.applyEntityAttributes();
-	    this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendHealth);
-	    this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendDamage);
-	    this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendSpeed);
-	    this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendFollowRange);
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.skythernFiendFollowRange);
 	}
 
 	@Override
@@ -29,8 +29,7 @@ public class EntitySkythernFiend extends EntityDivineRPGMob {
 	}
 
 	@Override
-	protected String getLivingSound()
-	{
+	protected String getLivingSound() {
 		return Sounds.getSoundName(Sounds.insect);
 	}
 

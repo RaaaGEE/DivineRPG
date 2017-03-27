@@ -20,81 +20,82 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class EntitySunArcher extends EntityDivineRPGMob implements IRangedAttackMob {
-    
-    private static final ItemStack defaultHeldItem = new ItemStack(TwilightItemsWeapons.edenBow, 1);
 
-    public EntitySunArcher(World var1) {
-        super(var1);
-        this.tasks.addTask(4, new EntityAIArrowAttack(this, this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue(), 50, 10));
-        this.getNavigator().setAvoidsWater(true);
-        this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 32.0F));
-        this.tasks.addTask(9, new EntityAILookIdle(this));
-        this.tasks.addTask(6, new EntityAIWander(this, getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue()*4));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
-    }
+	private static final ItemStack defaultHeldItem = new ItemStack(TwilightItemsWeapons.edenBow, 1);
 
-    @Override
-    public boolean isAIEnabled() {
-        return true;
-    }
+	public EntitySunArcher(World var1) {
+		super(var1);
+		tasks.addTask(4, new EntityAIArrowAttack(this, this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue(), 50, 10));
+		getNavigator().setAvoidsWater(true);
+		tasks.addTask(1, new EntityAISwimming(this));
+		tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 32.0F));
+		tasks.addTask(9, new EntityAILookIdle(this));
+		tasks.addTask(6, new EntityAIWander(this, getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue() * 4));
+		targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
+	}
 
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherHealth);
-        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherDamage);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherSpeed);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherFollowRange);
-    }
-  
-    @Override
-    protected String getLivingSound() {
-        return "mob.zombie.say";
-    }
+	@Override
+	public boolean isAIEnabled() {
+		return true;
+	}
 
-    @Override
-    public ItemStack getHeldItem() {
-        return defaultHeldItem;
-    }
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.sunArcherFollowRange);
+	}
 
-    @Override
-    protected String getHurtSound() {
-        return "mob.zombie.hit";
-    }
+	@Override
+	protected String getLivingSound() {
+		return "mob.zombie.say";
+	}
 
-    @Override
-    protected String getDeathSound() {
-        return "mob.zombie.death";
-    }
+	@Override
+	public ItemStack getHeldItem() {
+		return defaultHeldItem;
+	}
 
-    @Override
-    protected void dropFewItems(boolean var1, int var2) {
-        int var3 = this.rand.nextInt(2 + var2);
-        if(this.isBurning()) this.dropItem(ItemsFood.empoweredMeat, 1);
-        else this.dropItem(ItemsFood.rawEmpoweredMeat, 1);
-        this.dropItem(TwilightItemsOther.edenSoul, this.rand.nextInt(2 + var2));
-    }
+	@Override
+	protected String getHurtSound() {
+		return "mob.zombie.hit";
+	}
 
-    @Override
-    public EnumCreatureAttribute getCreatureAttribute() {
-        return EnumCreatureAttribute.UNDEFINED;
-    }
-    
-    @Override
-    public boolean isValidLightLevel() {
-        return true;
-    }
+	@Override
+	protected String getDeathSound() {
+		return "mob.zombie.death";
+	}
 
-    @Override
-    public void attackEntityWithRangedAttack(EntityLivingBase e, float f) {
-        EntityDivineArrow var2 = new EntityDivineArrow(this.worldObj, this, e, 1.6F, 12.0F, 9, "edenArrow");
-        this.playSound("random.bow", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        this.worldObj.spawnEntityInWorld(var2);
-    }
+	@Override
+	public void dropFewItems(boolean beenHit, int lootingLevel) {
+		if (isBurning())
+			dropItem(ItemsFood.empoweredMeat, 1);
+		else
+			dropItem(ItemsFood.rawEmpoweredMeat, 1);
+		dropItem(TwilightItemsOther.edenSoul, rand.nextInt(2 + rand.nextInt(2 + lootingLevel)));
+	}
 
-    @Override
-    public String mobName() {
-        return "Sun Archer";
-    }
+	@Override
+	public EnumCreatureAttribute getCreatureAttribute() {
+		return EnumCreatureAttribute.UNDEFINED;
+	}
+
+	@Override
+	public boolean isValidLightLevel() {
+		return true;
+	}
+
+	@Override
+	public void attackEntityWithRangedAttack(EntityLivingBase e, float f) {
+		EntityDivineArrow arrow = new EntityDivineArrow(worldObj, this, e, 1.6F, 12.0F, 9, "edenArrow");
+		playSound("random.bow", 1.0F, 1.0F / (getRNG().nextFloat() * 0.4F + 0.8F));
+		worldObj.spawnEntityInWorld(arrow);
+	}
+
+	@Override
+	public String mobName() {
+		return "Sun Archer";
+	}
 }

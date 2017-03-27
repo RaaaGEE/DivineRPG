@@ -1,23 +1,16 @@
 package net.divinerpg.entities.twilight;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.divinerpg.entities.base.EntityDivineRPGFlying;
 import net.divinerpg.entities.twilight.projectile.EntityCoriShot;
 import net.divinerpg.libs.Sounds;
+import net.divinerpg.utils.WorldUtils;
 import net.divinerpg.utils.items.TwilightItemsOther;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 public class EntityEdenCori extends EntityDivineRPGFlying {
 
@@ -28,7 +21,6 @@ public class EntityEdenCori extends EntityDivineRPGFlying {
 	private Entity targetedEntity = null;
 	private int aggroCooldown = 0;
 	private int attackCounter = 0;
-	private ChunkCoordinates currentFlightTarget;
 
 	public EntityEdenCori(World world) {
 		super(world);
@@ -74,7 +66,7 @@ public class EntityEdenCori extends EntityDivineRPGFlying {
 			courseChangeCooldown += rand.nextInt(5) + 2;
 			distance = MathHelper.sqrt_double(distance);
 
-			if (isCourseTraversable(dx, dy, dz, distance)) {
+			if (!WorldUtils.isCollide(posX, posY, posZ, waypointX, waypointY, waypointZ, worldObj, this, boundingBox.copy())) {
 				motionX += dx / distance * 0.1D;
 				motionY += dy / distance * 0.1D;
 				motionZ += dz / distance * 0.1D;
@@ -129,99 +121,6 @@ public class EntityEdenCori extends EntityDivineRPGFlying {
 				dataWatcher.updateObject(16, Byte.valueOf(b0));
 			}
 		}
-	}
-
-	// TODO n3k0: [performance] make AABB step by box size
-	private boolean isCourseTraversable(double x, double y, double z, double distance) {
-		final double nx = x / distance; // normal vector coords
-		final double ny = y / distance;
-		final double nz = z / distance;
-
-		final AxisAlignedBB aabb = boundingBox.copy();
-		for (int i = 1; i < distance; i++) {
-			aabb.offset(nx, ny, nz);
-
-			if (isBlockCollide(aabb) || isEntityCollide(aabb)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	// TODO n3k0: [refactor] move this code part to WorldUtils as faster collide
-	// check
-	private boolean isBlockCollide(AxisAlignedBB aabb) {
-		final int minx = MathHelper.floor_double(aabb.minX);
-		final int maxx = MathHelper.floor_double(aabb.maxX + 1.0D);
-		final int miny = MathHelper.floor_double(aabb.minY);
-		final int maxy = MathHelper.floor_double(aabb.maxY + 1.0D);
-		final int minz = MathHelper.floor_double(aabb.minZ);
-		final int maxz = MathHelper.floor_double(aabb.maxZ + 1.0D);
-
-		final List collides = new ArrayList();
-		for (int x = minx; x < maxx; x++) {
-			for (int z = minz; z < maxz; z++) {
-				if (!worldObj.blockExists(x, 64, z)) {
-					continue;
-				}
-
-				for (int y = miny; y < maxy; y++) {
-					final Block block;
-					if (x >= -30000000 && x < 30000000 && z >= -30000000 && z < 30000000) {
-						block = worldObj.getBlock(x, y, z);
-					} else {
-						block = Blocks.stone;
-					}
-
-					block.addCollisionBoxesToList(worldObj, x, y, z, aabb, collides, this);
-					if (!collides.isEmpty()) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private boolean isEntityCollide(AxisAlignedBB aabb) {
-		final int minx = MathHelper.floor_double((aabb.minX - World.MAX_ENTITY_RADIUS) / 16.0D);
-		final int maxx = MathHelper.floor_double((aabb.maxX + World.MAX_ENTITY_RADIUS) / 16.0D);
-		final int miny = MathHelper.floor_double((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0D);
-		final int maxy = MathHelper.floor_double((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0D);
-		final int minz = MathHelper.floor_double((aabb.minZ - World.MAX_ENTITY_RADIUS) / 16.0D);
-		final int maxz = MathHelper.floor_double((aabb.maxZ + World.MAX_ENTITY_RADIUS) / 16.0D);
-
-		final List collides = new ArrayList();
-		for (int x = minx; x <= maxx; x++) {
-			for (int z = minz; z <= maxz; z++) {
-				if (!worldObj.checkChunksExist(x, 0, z, x, 0, z)) {
-					continue;
-				}
-
-				final Chunk chunk = worldObj.getChunkFromChunkCoords(x, z);
-				final int chunkMinY = MathHelper.clamp_int(miny, 0, chunk.entityLists.length - 1);
-				final int chunkMaxY = MathHelper.clamp_int(maxy, 0, chunk.entityLists.length - 1);
-
-				for (int y = chunkMinY; y <= chunkMaxY; y++) {
-					final List entitys = chunk.entityLists[y];
-
-					for (int i = 0; i < entitys.size(); i++) {
-						final Entity entity = (Entity) entitys.get(i);
-						if (entity == this) {
-							continue;
-						}
-
-						if (entity.boundingBox.intersectsWith(aabb)) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-
-		return false;
 	}
 
 	@Override
