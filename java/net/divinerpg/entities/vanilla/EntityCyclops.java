@@ -18,19 +18,19 @@ public class EntityCyclops extends EntityPeacefulUntilAttacked {
 
 	public EntityCyclops(World var1) {
 		super(var1);
-		this.setSize(1.5F, 3.9F);
-		this.experienceValue = 40;
+		setSize(1.5F, 3.9F);
+		experienceValue = 40;
 	}
 
 	@Override
 	protected void applyEntityAttributes() {
-	    super.applyEntityAttributes();
-	    this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsHealth);
-	    this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsDamage);
-	    this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsSpeed);
-	    this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsFollowRange);
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.cyclopsFollowRange);
 	}
-	
+
 	@Override
 	protected String getLivingSound() {
 		return Sounds.getSoundName(Sounds.cyclops);
@@ -47,43 +47,45 @@ public class EntityCyclops extends EntityPeacefulUntilAttacked {
 	}
 
 	@Override
-	protected void dropFewItems(boolean var1, int loot) {
-		dropItem(VanillaItemsOther.cyclopsEye, rand.nextInt(2 + loot));
-		dropItem(Items.gold_ingot, rand.nextInt(2 + loot));
-		if(rand.nextInt(40) == 0) dropItem(VanillaItemsOther.bloodgem, 1);
+	public void dropFewItems(boolean beenHit, int lootingLevel) {
+		dropItem(VanillaItemsOther.cyclopsEye, rand.nextInt(2 + lootingLevel));
+		dropItem(Items.gold_ingot, rand.nextInt(2 + lootingLevel));
+		if (rand.nextInt(40) == 0)
+			dropItem(VanillaItemsOther.bloodgem, 1);
 	}
-	
+
 	@Override
-    public boolean attackEntityFrom(DamageSource source, float par2) {
-	    boolean hurt = super.attackEntityFrom(source, par2);
-	    if(hurt && source.getEntity() != null && source.getEntity() instanceof EntityPlayer) {
-	        List<Entity> entities = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(20, 20, 20));
-	        for(Entity e : entities) {
-	            if(e instanceof EntityCyclops) ((EntityCyclops)e).makeAngryAt((EntityPlayer)source.getEntity());
-	        }
-	    }
-	    return hurt;
+	public boolean attackEntityFrom(DamageSource source, float par2) {
+		boolean hurt = super.attackEntityFrom(source, par2);
+		if (hurt && source.getEntity() != null && source.getEntity() instanceof EntityPlayer) {
+			List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(20, 20, 20));
+			for (Entity e : entities) {
+				if (e instanceof EntityCyclops)
+					((EntityCyclops) e).makeAngryAt((EntityPlayer) source.getEntity());
+			}
+		}
+		return hurt;
 	}
-	
+
 	@Override
 	public boolean isValidLightLevel() {
-	    int i = MathHelper.floor_double(this.posX);
-        int j = MathHelper.floor_double(this.boundingBox.minY);
-        int k = MathHelper.floor_double(this.posZ);
+		int x = MathHelper.floor_double(this.posX);
+		int y = MathHelper.floor_double(this.boundingBox.minY);
+		int z = MathHelper.floor_double(this.posZ);
 
-        if (this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, i, j, k) > this.rand.nextInt(32)) return false;
-        else {
-            int l = this.worldObj.getBlockLightValue(i, j, k);
+		if (worldObj.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) > rand.nextInt(32))
+			return false;
+		
+		int light = worldObj.getBlockLightValue(x, y, z);
 
-            if (this.worldObj.isThundering()) {
-                int i1 = this.worldObj.skylightSubtracted;
-                this.worldObj.skylightSubtracted = 10;
-                l = this.worldObj.getBlockLightValue(i, j, k);
-                this.worldObj.skylightSubtracted = i1;
-            }
+		if (worldObj.isThundering()) {
+			int lightSubstracted = worldObj.skylightSubtracted;
+			worldObj.skylightSubtracted = 10;
+			light = worldObj.getBlockLightValue(x, y, z);
+			worldObj.skylightSubtracted = lightSubstracted;
+		}
 
-            return l <= this.rand.nextInt(8);
-        }
+		return light <= rand.nextInt(8);
 	}
 
 	@Override

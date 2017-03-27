@@ -12,65 +12,71 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class EntityAridWarrior extends EntityDivineRPGMob {
-	
-    private static final ItemStack defaultHeldItem = new ItemStack(VanillaItemsWeapons.shadowBow, 1);
 
-    public EntityAridWarrior(World par1World) {
-        super(par1World);
-        addAttackingAI();
-    }
-    
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorHealth);
-        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorDamage);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorSpeed);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorFollowRange);
-    }
-    
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-        if(!this.worldObj.isRemote) {
-            this.entityToAttack = this.worldObj.getClosestVulnerablePlayerToEntity(this, 16);
-            if(this.entityToAttack != null && this.ticksExisted%18==0) this.attackEntityWithRangedAttack((EntityLivingBase)this.entityToAttack);
-        }
-    }
+	private static final ItemStack defaultHeldItem = new ItemStack(VanillaItemsWeapons.shadowBow, 1);
 
-    protected String getLivingSound() {
-    	 return Sounds.getSoundName(Sounds.aridWarrior);
-    }
+	public EntityAridWarrior(World par1World) {
+		super(par1World);
+		addAttackingAI();
+	}
 
-    protected String getHurtSound() {
-    	 return Sounds.getSoundName(Sounds.aridWarriorHurt);
-    }
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.aridWarriorFollowRange);
+	}
 
-    protected String getDeathSound() {
-        return Sounds.getSoundName(Sounds.aridWarriorHurt);
-    }
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		if (!worldObj.isRemote) {
+			entityToAttack = worldObj.getClosestVulnerablePlayerToEntity(this, 16);
+			if (entityToAttack != null && ticksExisted % 18 == 0)
+				attackEntityWithRangedAttack((EntityLivingBase) entityToAttack);
+		}
+	}
 
-    public ItemStack getHeldItem() {
-        return defaultHeldItem;
-    }
+	@Override
+	protected String getLivingSound() {
+		return Sounds.getSoundName(Sounds.aridWarrior);
+	}
 
-    @Override
-    protected void dropFewItems(boolean par1, int par2) {
-        this.dropItem(Item.getItemFromBlock(Blocks.sandstone), this.rand.nextInt(10));
-        this.entityDropItem(new ItemStack(Blocks.wool, this.rand.nextInt(10), 14), 0.0F);
-    }
+	@Override
+	protected String getHurtSound() {
+		return Sounds.getSoundName(Sounds.aridWarriorHurt);
+	}
 
-    public void attackEntityWithRangedAttack(EntityLivingBase e) {
-        EntityArrow var2 = new EntityArrow(this.worldObj, this, e, 1.6F, 4.5F);
-        var2.setDamage(1.5);
+	@Override
+	protected String getDeathSound() {
+		return Sounds.getSoundName(Sounds.aridWarriorHurt);
+	}
 
-        this.playSound("random.bow", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        this.worldObj.spawnEntityInWorld(var2);
-    }
+	@Override
+	public ItemStack getHeldItem() {
+		return defaultHeldItem;
+	}
 
+	@Override
+	public void dropFewItems(boolean beenHit, int lootingLevel) {
+		dropItem(Item.getItemFromBlock(Blocks.sandstone), rand.nextInt(10));
+		entityDropItem(new ItemStack(Blocks.wool, rand.nextInt(10), 14), 0.0F);
+	}
+
+	public void attackEntityWithRangedAttack(EntityLivingBase e) {
+		EntityArrow arrow = new EntityArrow(worldObj, this, e, 1.6F, 4.5F);
+		arrow.setDamage(1.5);
+
+		playSound("random.bow", 1.0F, 1.0F / (getRNG().nextFloat() * 0.4F + 0.8F));
+		worldObj.spawnEntityInWorld(arrow);
+	}
+
+	@Override
 	protected Item getDropItem() {
-        return Item.getItemFromBlock(Blocks.sandstone);
-    }
+		return Item.getItemFromBlock(Blocks.sandstone);
+	}
 
 	@Override
 	public String mobName() {

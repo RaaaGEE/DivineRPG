@@ -16,11 +16,11 @@ public class EntityDesertCrawler extends EntityDivineRPGMob {
 
 	@Override
 	protected void applyEntityAttributes() {
-	    super.applyEntityAttributes();
-	    this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerHealth);
-	    this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerDamage);
-	    this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerSpeed);
-	    this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerFollowRange);
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.desertCrawlerFollowRange);
 	}
 
 	@Override
@@ -38,22 +38,15 @@ public class EntityDesertCrawler extends EntityDivineRPGMob {
 		return Sounds.getSoundName(Sounds.crawlerHurt);
 	}
 
+	@Override
 	protected Item getDropItem() {
 		return Item.getItemFromBlock(Blocks.sandstone);
 	}
 
 	@Override
-	protected void dropFewItems(boolean par1, int par2) {
-		Item i = getDropItem();
-		int var4;
-		int var3 = this.rand.nextInt(3 + par2);
-
-		for(var4 = 0; var4 < var3; ++var4) {
-			this.dropItem(i, 20);
-		}
-
-		for(var4 = 0; var4 < var3; ++var4) {
-			this.dropItem(i, 60);
+	public void dropFewItems(boolean beenHit, int lootingLevel) {
+		for (int i = 0; i < rand.nextInt(3 + lootingLevel); i++) {
+			dropItem(getDropItem(), 20);
 		}
 	}
 

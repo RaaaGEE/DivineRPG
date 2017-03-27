@@ -13,17 +13,17 @@ public class EntityCaveCrawler extends EntityDivineRPGMob {
 
 	public EntityCaveCrawler(World par1World) {
 		super(par1World);
-		this.setSize(1.5F, 2.0F);
+		setSize(1.5F, 2.0F);
 		addAttackingAI();
 	}
 
 	@Override
 	protected void applyEntityAttributes() {
-	    super.applyEntityAttributes();
-	    this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerHealth);
-	    this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerDamage);
-	    this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerSpeed);
-	    this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerFollowRange);
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.caveCrawlerFollowRange);
 	}
 
 	@Override
@@ -48,21 +48,19 @@ public class EntityCaveCrawler extends EntityDivineRPGMob {
 
 	@Override
 	protected void dropRareDrop(int par1) {
-		switch(this.rand.nextInt(1)) {
-		case 0:
-			this.entityDropItem(new ItemStack(Items.potionitem, 1, 8196), 0.0F);
-			break;
+		if (rand.nextBoolean()) {
+			entityDropItem(new ItemStack(Items.potionitem, 1, 8196), 0.0F);
 		}
 	}
 
-    @Override
-    protected boolean isValidLightLevel() {
-        return true;
-    }
-    
+	@Override
+	protected boolean isValidLightLevel() {
+		return true;
+	}
+
 	@Override
 	public boolean getCanSpawnHere() {
-		return this.posY < 35.0D && super.getCanSpawnHere();
+		return posY < 35.0D && super.getCanSpawnHere();
 	}
 
 	@Override

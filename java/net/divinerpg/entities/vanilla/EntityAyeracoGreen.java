@@ -1,102 +1,94 @@
 package net.divinerpg.entities.vanilla;
 
-import java.util.UUID;
-
-import net.divinerpg.utils.LogHelper;
 import net.divinerpg.utils.Util;
 import net.divinerpg.utils.items.VanillaItemsWeapons;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityAyeracoGreen extends EntityAyeraco {
-	
-    private EntityAyeraco aBlue;
-    private EntityAyeraco aRed;
-    private EntityAyeraco aYellow;
-    private EntityAyeraco aPurple;
-    private String blueUUID;
-    private String redUUID;
-    private String yellowUUID;
-    private String purpleUUID;
 
-    public EntityAyeracoGreen (World par1World) {
-        super (par1World, "Green");
-    }
+	private EntityAyeraco blue;
+	private EntityAyeraco red;
+	private EntityAyeraco yellow;
+	private EntityAyeraco purple;
+	private String blueUUID;
+	private String redUUID;
+	private String yellowUUID;
+	private String purpleUUID;
 
-    public void initOthers (EntityAyeraco par2, EntityAyeraco par3, EntityAyeraco par4, EntityAyeraco par5) {
-		this.aBlue = par2;
-		this.aRed = par3;
-		this.aYellow = par4;
-		this.aPurple = par5;
+	public EntityAyeracoGreen(World par1World) {
+		super(par1World, "Green");
 	}
- 
-    @Override
-    public void onDeath(DamageSource par1DamageSource) {
-    	super.onDeath(par1DamageSource);
-    	worldObj.setBlock(beamX, beamY, beamZ, Blocks.air);
-    }
 
-    @Override
-    protected boolean canBlockProjectiles() {
+	public void initOthers(EntityAyeraco blue, EntityAyeraco red, EntityAyeraco yellow, EntityAyeraco purple) {
+		this.blue = blue;
+		this.red = red;
+		this.yellow = yellow;
+		this.purple = purple;
+	}
+
+	@Override
+	protected boolean canBlockProjectiles() {
 		return true;
 	}
-	
-    @Override
-    protected boolean canTeleport() {
-		if (this.aPurple != null && this.aPurple.abilityActive()) {
-			return true;
-		}
-		return false;
+
+	@Override
+	protected boolean canTeleport() {
+		return purple != null && purple.isAbilityActive();
 	}
 
-    @Override
-    protected void dropRareDrop(int par1) {
-        this.dropItem(VanillaItemsWeapons.greenEnderSword, 1);
-    }
-    
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-        if(!this.worldObj.isRemote) {
-            if (aBlue == null && blueUUID != null) {
-                aBlue = (EntityAyeraco)Util.findEntityByUUID(blueUUID, this.worldObj);
-                blueUUID = null;
-            }
-            if (aRed == null && redUUID != null) {
-                aRed = (EntityAyeraco)Util.findEntityByUUID(redUUID, this.worldObj);
-                redUUID = null;
-            }
-            if (aYellow == null && yellowUUID != null) {
-                aYellow = (EntityAyeraco)Util.findEntityByUUID(yellowUUID, this.worldObj);
-                yellowUUID = null;
-            }
-            if (aPurple == null && purpleUUID != null) {
-                aPurple = (EntityAyeraco)Util.findEntityByUUID(purpleUUID, this.worldObj);
-                purpleUUID = null;
-            }
-        }
-    }
+	@Override
+	protected void dropRareDrop(int par1) {
+		dropItem(VanillaItemsWeapons.greenEnderSword, 1);
+	}
 
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		if (worldObj.isRemote) {
+			return;
+		}
 
-        blueUUID = tag.getString("blueUUID");
-        redUUID = tag.getString("redUUID");
-        yellowUUID = tag.getString("yellowUUID");
-        purpleUUID = tag.getString("purpleUUID");
-    }
+		if (blue == null && blueUUID != null) {
+			blue = (EntityAyeraco) Util.findEntityByUUID(blueUUID, worldObj);
+			blueUUID = null;
+		}
+		if (red == null && redUUID != null) {
+			red = (EntityAyeraco) Util.findEntityByUUID(redUUID, worldObj);
+			redUUID = null;
+		}
+		if (yellow == null && yellowUUID != null) {
+			yellow = (EntityAyeraco) Util.findEntityByUUID(yellowUUID, worldObj);
+			yellowUUID = null;
+		}
+		if (purple == null && purpleUUID != null) {
+			purple = (EntityAyeraco) Util.findEntityByUUID(purpleUUID, worldObj);
+			purpleUUID = null;
+		}
+	}
 
-    @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
+	@Override
+	public void readFromNBT(NBTTagCompound tag) {
+		super.readFromNBT(tag);
 
-        tag.setString("blueUUID", aBlue.getPersistentID().toString());
-        tag.setString("redUUID", aRed.getPersistentID().toString());
-        tag.setString("yellowUUID", aYellow.getPersistentID().toString());
-        tag.setString("purpleUUID", aPurple.getPersistentID().toString());
-    }
+		blueUUID = tag.getString("blueUUID");
+		redUUID = tag.getString("redUUID");
+		yellowUUID = tag.getString("yellowUUID");
+		purpleUUID = tag.getString("purpleUUID");
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound tag) {
+		super.writeToNBT(tag);
+
+		tag.setString("blueUUID", blue.getPersistentID().toString());
+		tag.setString("redUUID", red.getPersistentID().toString());
+		tag.setString("yellowUUID", yellow.getPersistentID().toString());
+		tag.setString("purpleUUID", purple.getPersistentID().toString());
+	}
+
+	@Override
+	protected void tickAbility() {
+
+	}
 }

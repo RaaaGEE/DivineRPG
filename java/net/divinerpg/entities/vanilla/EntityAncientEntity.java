@@ -5,10 +5,8 @@ import net.divinerpg.utils.blocks.VanillaBlocks;
 import net.divinerpg.utils.items.VanillaItemsOther;
 import net.divinerpg.utils.items.VanillaItemsWeapons;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.boss.IBossDisplayData;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -19,26 +17,33 @@ public class EntityAncientEntity extends EntityDivineRPGBoss {
 
 	public EntityAncientEntity(World par1World) {
 		super(par1World);
-		this.setSize(4.0F, 6.5F);
+		setSize(4.0F, 6.5F);
 		addAttackingAI();
 	}
 
 	@Override
 	protected void applyEntityAttributes() {
-	    super.applyEntityAttributes();
-	    this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntityHealth);
-	    this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntityDamage);
-	    this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntitySpeed);
-	    this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntityFollowRange);
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntityHealth);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntityDamage);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntitySpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.ancientEntityFollowRange);
 	}
 
 	@Override
 	public boolean attackEntityAsMob(Entity par1Entity) {
 		super.attackEntityAsMob(par1Entity);
-		if(this.entityToAttack != null) {
-			this.entityToAttack.addVelocity(this.motionX * 10.0D, 3.0D, this.motionZ * 10.0D);
-			if(this.entityToAttack instanceof EntityLiving) {
-				((EntityLivingBase)entityToAttack).addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 100, 0));
+		
+		if (entityToAttack != null) {
+			entityToAttack.addVelocity(motionX * 10.0D, 3.0D, motionZ * 10.0D);
+			
+			if (entityToAttack instanceof EntityPlayer) {
+				final EntityPlayer player = (EntityPlayer) entityToAttack;
+				
+				if(!player.isPotionActive(Potion.moveSlowdown)) {
+					player.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 100, 0));
+				}
+				
 				playSound("mob.irongolem.throw", 1.0F, 1.0F);
 			}
 			return true;
@@ -57,10 +62,10 @@ public class EntityAncientEntity extends EntityDivineRPGBoss {
 	}
 
 	@Override
-	protected void dropFewItems(boolean par1, int par2) {   	
-		this.dropItem(VanillaItemsOther.divineShards, this.rand.nextInt(4) + 3);
-		this.dropItem(VanillaItemsWeapons.sandslash, 1);
-		this.dropItem(Item.getItemFromBlock(VanillaBlocks.ancientEntityStatue), 1);
+	public void dropFewItems(boolean beenHit, int lootingLevel) {
+		dropItem(VanillaItemsOther.divineShards, rand.nextInt(4) + 3);
+		dropItem(VanillaItemsWeapons.sandslash, 1);
+		dropItem(Item.getItemFromBlock(VanillaBlocks.ancientEntityStatue), 1);
 	}
 
 	@Override

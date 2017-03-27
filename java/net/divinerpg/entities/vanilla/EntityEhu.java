@@ -15,78 +15,83 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityEhu extends EntityDivineRPGTameable {
-	
 
-    public EntityEhu(World par1World, EntityPlayer p) {
-        this(par1World);
-        setTamed(true);
-        func_152115_b(p.getUniqueID().toString());
-    }
-    
-    public EntityEhu(World par1World) {
-        super(par1World);
-        this.setSize(0.6f, 0.8f);
-    }
+	public EntityEhu(World par1World, EntityPlayer p) {
+		this(par1World);
+		setTamed(true);
+		func_152115_b(p.getUniqueID().toString());
+	}
 
-    @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.ehuHealth);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.ehuSpeed);
-        this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.ehuFollowRange);
-    }
-    
-    @Override
-    protected String getLivingSound() {
-        return Sounds.getSoundName(Sounds.growl);
-    }
+	public EntityEhu(World par1World) {
+		super(par1World);
+		setSize(0.6f, 0.8f);
+	}
 
-    @Override
-    protected String getHurtSound() {
-        return Sounds.getSoundName(Sounds.growlHurt);
-    }
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(net.divinerpg.entities.base.EntityStats.ehuHealth);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(net.divinerpg.entities.base.EntityStats.ehuSpeed);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(net.divinerpg.entities.base.EntityStats.ehuFollowRange);
+	}
 
-    @Override
-    protected String getDeathSound() {
-        return Sounds.getSoundName(Sounds.growlHurt);
-    }
+	@Override
+	protected String getLivingSound() {
+		return Sounds.getSoundName(Sounds.growl);
+	}
 
-    @Override
-    public boolean interact(EntityPlayer player) {
-        ItemStack stack = player.inventory.getCurrentItem();
+	@Override
+	protected String getHurtSound() {
+		return Sounds.getSoundName(Sounds.growlHurt);
+	}
 
-        if (this.isTamed()) {
-            if (stack != null) {
-                if (stack.getItem() instanceof ItemFood) {
-                    ItemFood var3 = (ItemFood)stack.getItem();
+	@Override
+	protected String getDeathSound() {
+		return Sounds.getSoundName(Sounds.growlHurt);
+	}
 
-                    if (var3 == Items.carrot || var3 == Items.apple || var3 == TwilightItemsCrops.moonbulb && this.getHealth() < EntityStats.ehuHealth) {
-                        if (!player.capabilities.isCreativeMode) {
-                            --stack.stackSize;
-                        }
+	@Override
+	public boolean interact(EntityPlayer player) {
+		if (!isTamed()) {
+			setTamed(true);
+			func_152115_b(player.getUniqueID().toString());
+			return super.interact(player);
+		}
+		
+		if(getHealth() >= getMaxHealth()) {
+			return super.interact(player);
+		}
 
-                        this.heal(var3.func_150905_g/*getHealAmount*/(stack));
+		final ItemStack stack = player.inventory.getCurrentItem();
+		if(stack == null) {
+			return super.interact(player);
+		}
 
-                        if (stack.stackSize <= 0) {
-                            player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-                        }
+		if (stack.getItem() instanceof ItemFood) {
+			ItemFood food = (ItemFood) stack.getItem();
 
-                        return true;
-                    }
-                }
-            }
-        } else {
-            this.setTamed(true);
-            this.func_152115_b(player.getUniqueID().toString());
-        }
+			if (food == Items.carrot || food == Items.apple || food == TwilightItemsCrops.moonbulb) {
+				if (!player.capabilities.isCreativeMode) {
+					stack.stackSize--;
+				}
 
-        return super.interact(player);
-    }
-    
-    @Override
-    public boolean attackEntityAsMob(Entity e) {
-    	return e.attackEntityFrom(DamageSource.causeMobDamage(this), (float)EntityStats.ehuDamage);
-    }
+				heal(food.func_150905_g/* getHealAmount */(stack));
+
+				if (stack.stackSize <= 0) {
+					player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+				}
+
+				return true;
+			}
+		}
+
+		return super.interact(player);
+	}
+
+	@Override
+	public boolean attackEntityAsMob(Entity e) {
+		return e.attackEntityFrom(DamageSource.causeMobDamage(this), (float) EntityStats.ehuDamage);
+	}
 
 	@Override
 	public String mobName() {
