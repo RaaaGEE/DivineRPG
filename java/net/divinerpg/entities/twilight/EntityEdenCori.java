@@ -50,23 +50,27 @@ public class EntityEdenCori extends EntityDivineRPGFlying {
 
 		despawnEntity();
 
-		final double dx = waypointX - posX;
-		final double dy = waypointY - posY;
-		final double dz = waypointZ - posZ;
-		double distance = dx * dx + dy * dy + dz * dz;
-
-		if (distance < 1.0D || distance > 3600.0D || distance == Double.NaN) {
-			waypointX = posX + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
-			waypointY = posY + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
-			waypointZ = posZ + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
-		}
-
 		courseChangeCooldown--;
 		if (courseChangeCooldown == 0) {
-			courseChangeCooldown += rand.nextInt(5) + 2;
-			distance = MathHelper.sqrt_double(distance);
+			courseChangeCooldown += 5 + rand.nextInt(10);
+			
+			double dx = waypointX - posX;
+			double dy = waypointY - posY;
+			double dz = waypointZ - posZ;
+			double distance = dx * dx + dy * dy + dz * dz;
 
+			if (distance < 1.0D || distance > 3600.0D || Double.isNaN(distance)) {
+				waypointX = posX + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
+				waypointY = posY + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
+				waypointZ = posZ + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F;
+				dx = waypointX - posX;
+				dy = waypointY - posY;
+				dz = waypointZ - posZ;
+				distance = dx * dx + dy * dy + dz * dz;
+			}
+			
 			if (!WorldUtils.isCollide(posX, posY, posZ, waypointX, waypointY, waypointZ, worldObj, this, boundingBox.copy())) {
+				distance = MathHelper.sqrt_double(distance);
 				motionX += dx / distance * 0.1D;
 				motionY += dy / distance * 0.1D;
 				motionZ += dz / distance * 0.1D;
